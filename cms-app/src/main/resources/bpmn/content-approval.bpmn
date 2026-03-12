@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  id="Definitions_1"
+                  targetNamespace="http://camunda.org/examples">
+
+    <bpmn:process id="contentApprovalProcess" name="Content Approval Process" isExecutable="true" camunda:historyTimeToLive="180">
+        <bpmn:startEvent id="StartEvent_Submit" name="Content Submitted">
+            <bpmn:outgoing>Flow_1</bpmn:outgoing>
+        </bpmn:startEvent>
+
+        <bpmn:userTask id="Task_EditorReview" name="Editor Review">
+            <bpmn:incoming>Flow_1</bpmn:incoming>
+            <bpmn:outgoing>Flow_2</bpmn:outgoing>
+        </bpmn:userTask>
+
+        <bpmn:exclusiveGateway id="Gateway_Approval" name="Approved?">
+            <bpmn:incoming>Flow_2</bpmn:incoming>
+            <bpmn:outgoing>Flow_Approved</bpmn:outgoing>
+            <bpmn:outgoing>Flow_Rejected</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+
+        <bpmn:serviceTask id="Task_SchedulePublication" name="Schedule Publication" camunda:delegateExpression="${publicationSchedulerDelegate}">
+            <bpmn:incoming>Flow_Approved</bpmn:incoming>
+            <bpmn:outgoing>Flow_3</bpmn:outgoing>
+        </bpmn:serviceTask>
+
+        <bpmn:serviceTask id="Task_NotifyMarketing" name="Notify Marketing" camunda:delegateExpression="${marketingNotificationDelegate}">
+            <bpmn:incoming>Flow_3</bpmn:incoming>
+            <bpmn:outgoing>Flow_4</bpmn:outgoing>
+        </bpmn:serviceTask>
+
+        <bpmn:endEvent id="EndEvent_Approved" name="Approved &amp; Scheduled">
+            <bpmn:incoming>Flow_4</bpmn:incoming>
+        </bpmn:endEvent>
+
+        <bpmn:endEvent id="EndEvent_Rejected" name="Rejected">
+            <bpmn:incoming>Flow_Rejected</bpmn:incoming>
+        </bpmn:endEvent>
+
+        <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_Submit" targetRef="Task_EditorReview"/>
+        <bpmn:sequenceFlow id="Flow_2" sourceRef="Task_EditorReview" targetRef="Gateway_Approval"/>
+        <bpmn:sequenceFlow id="Flow_Approved" sourceRef="Gateway_Approval" targetRef="Task_SchedulePublication">
+            <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${approved == true}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_Rejected" sourceRef="Gateway_Approval" targetRef="EndEvent_Rejected">
+            <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${approved == false}</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Flow_3" sourceRef="Task_SchedulePublication" targetRef="Task_NotifyMarketing"/>
+        <bpmn:sequenceFlow id="Flow_4" sourceRef="Task_NotifyMarketing" targetRef="EndEvent_Approved"/>
+    </bpmn:process>
+
+    <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+        <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="contentApprovalProcess">
+            <bpmndi:BPMNShape id="StartEvent_Submit_di" bpmnElement="StartEvent_Submit">
+                <dc:Bounds x="100" y="150" width="36" height="36"/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="Task_EditorReview_di" bpmnElement="Task_EditorReview">
+                <dc:Bounds x="200" y="128" width="100" height="80"/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="Gateway_Approval_di" bpmnElement="Gateway_Approval" isMarkerVisible="true">
+                <dc:Bounds x="350" y="143" width="50" height="50"/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="Task_SchedulePublication_di" bpmnElement="Task_SchedulePublication">
+                <dc:Bounds x="450" y="128" width="140" height="80"/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="Task_NotifyMarketing_di" bpmnElement="Task_NotifyMarketing">
+                <dc:Bounds x="640" y="128" width="140" height="80"/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="EndEvent_Approved_di" bpmnElement="EndEvent_Approved">
+                <dc:Bounds x="820" y="150" width="36" height="36"/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="EndEvent_Rejected_di" bpmnElement="EndEvent_Rejected">
+                <dc:Bounds x="420" y="260" width="36" height="36"/>
+            </bpmndi:BPMNShape>
+
+            <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
+                <di:waypoint x="136" y="168"/>
+                <di:waypoint x="200" y="168"/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2">
+                <di:waypoint x="300" y="168"/>
+                <di:waypoint x="350" y="168"/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_Approved_di" bpmnElement="Flow_Approved">
+                <di:waypoint x="400" y="168"/>
+                <di:waypoint x="450" y="168"/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3">
+                <di:waypoint x="590" y="168"/>
+                <di:waypoint x="640" y="168"/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4">
+                <di:waypoint x="780" y="168"/>
+                <di:waypoint x="820" y="168"/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge id="Flow_Rejected_di" bpmnElement="Flow_Rejected">
+                <di:waypoint x="375" y="193"/>
+                <di:waypoint x="375" y="278"/>
+                <di:waypoint x="420" y="278"/>
+            </bpmndi:BPMNEdge>
+        </bpmndi:BPMNPlane>
+    </bpmndi:BPMNDiagram>
+</bpmn:definitions>

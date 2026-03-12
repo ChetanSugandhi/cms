@@ -1,0 +1,7 @@
+target/
+.idea/
+.DS_Store
+*.log
+git rm -r --cached Digital_CMS/cms-app/target
+git rm -r --cached Digital_CMS/cms-api/target
+git rm -r --cached Digital_CMS/cms-service/target
