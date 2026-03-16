@@ -13,6 +13,7 @@ import com.media.cms.repository.UserRepository;
 import com.media.cms.service.ContentService;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -46,6 +47,7 @@ public class ContentServiceImpl implements ContentService {
         content.setTitle(request.getTitle());
         content.setDescription(request.getDescription());
         content.setFormat(request.getFormat());
+        content.setPublicationDate(LocalDateTime.now());
         content.setStatus(ContentStatus.DRAFT);
         content.setCreator(creator);
         return contentRepository.save(content);
