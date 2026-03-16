@@ -43,8 +43,13 @@ public class ContentControllerImpl implements ContentController {
 //        Long creatorId = userRepository.findByEmail(principal.getName())
 //                .orElseThrow(() -> new BadRequestException("Authenticated user not found"))
 //                .getId();
-      User user = (User) principal;
-        return ResponseEntity.ok(contentService.create(request, user.getId()));
+//      User user = (User) principal;
+      String email = principal.getName();
+
+      User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new BadRequestException("Authenticated user not found"));
+
+      return ResponseEntity.ok(contentService.create(request, user.getId()));
     }
 
     @PutMapping("/{id}")
