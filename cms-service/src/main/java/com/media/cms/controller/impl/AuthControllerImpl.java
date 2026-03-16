@@ -4,6 +4,7 @@ import com.media.cms.model.dto.AuthRequest;
 import com.media.cms.model.dto.AuthResponse;
 import com.media.cms.model.dto.RegisterRequest;
 import com.media.cms.model.entity.User;
+import com.media.cms.repository.UserRepository;
 import com.media.cms.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +17,12 @@ import org.springframework.web.bind.annotation.*;
 public class AuthControllerImpl implements com.media.cms.controller.AuthController {
 
     private final AuthService authService;
+    private final UserRepository userRepository;
 
-    public AuthControllerImpl(AuthService authService) {
+    public AuthControllerImpl(AuthService authService,
+                              UserRepository userRepository) {
         this.authService = authService;
+        this.userRepository = userRepository;
     }
 
     @PostMapping("/register")
@@ -34,8 +38,11 @@ public class AuthControllerImpl implements com.media.cms.controller.AuthControll
     @GetMapping("/getUserId")
     public long getCurrentLoggedInUserId() {
       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-      User userDetailsService1 = (User) authentication.getPrincipal();
+      String email = authentication.getName();
 
-      return userDetailsService1.getId();
+      User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new RuntimeException("User not found with email : " + email));
+
+      return user.getId();
   }
 }
