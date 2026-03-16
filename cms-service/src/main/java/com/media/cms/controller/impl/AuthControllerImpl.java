@@ -12,6 +12,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthControllerImpl implements com.media.cms.controller.AuthController {
@@ -36,13 +38,14 @@ public class AuthControllerImpl implements com.media.cms.controller.AuthControll
     }
 
     @GetMapping("/getUserId")
-    public long getCurrentLoggedInUserId() {
+    public Map<String, Long> getCurrentLoggedInUserId() {
       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
       String email = authentication.getName();
 
       User user = userRepository.findByEmail(email)
         .orElseThrow(() -> new RuntimeException("User not found with email : " + email));
 
-      return user.getId();
+
+      return Map.of("id", user.getId());
   }
 }
