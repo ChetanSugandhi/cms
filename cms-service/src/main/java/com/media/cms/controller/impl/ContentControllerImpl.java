@@ -7,6 +7,7 @@ import com.media.cms.model.dto.ContentCreateRequest;
 import com.media.cms.model.dto.ContentUpdateRequest;
 import com.media.cms.model.entity.Content;
 import com.media.cms.model.entity.ContentStatus;
+import com.media.cms.model.entity.User;
 import com.media.cms.repository.UserRepository;
 import com.media.cms.service.ContentService;
 import jakarta.validation.Valid;
@@ -14,6 +15,7 @@ import java.security.Principal;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,10 +40,11 @@ public class ContentControllerImpl implements ContentController {
     @PostMapping("/create")
     @PreAuthorize("hasAnyRole('CONTENT_CREATOR','MANAGER')")
     public ResponseEntity<Content> create(@Valid @RequestBody ContentCreateRequest request, Principal principal) {
-        Long creatorId = userRepository.findByEmail(principal.getName())
-                .orElseThrow(() -> new BadRequestException("Authenticated user not found"))
-                .getId();
-        return ResponseEntity.ok(contentService.create(request, creatorId));
+//        Long creatorId = userRepository.findByEmail(principal.getName())
+//                .orElseThrow(() -> new BadRequestException("Authenticated user not found"))
+//                .getId();
+      User user = (User) principal;
+        return ResponseEntity.ok(contentService.create(request, user.getId()));
     }
 
     @PutMapping("/{id}")

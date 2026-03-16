@@ -5,6 +5,8 @@ import com.media.cms.model.dto.ContentUpdateRequest;
 import com.media.cms.model.entity.Content;
 import com.media.cms.model.entity.ContentStatus;
 import java.util.List;
+
+import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface ContentService {

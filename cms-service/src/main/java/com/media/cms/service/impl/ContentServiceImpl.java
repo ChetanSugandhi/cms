@@ -12,9 +12,12 @@ import com.media.cms.repository.ContentRepository;
 import com.media.cms.repository.UserRepository;
 import com.media.cms.service.ContentService;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
